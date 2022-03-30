@@ -67,7 +67,7 @@ def on_connect(client, userdata, flags, rc):
 
 def on_publish(client, config_cmd, result):
     print("Configuration published \n")
-    client1.publish("configuration", config_cmd)
+    ret = client1.publish("configuration", config_cmd)
     pass
 
 # This function converts hex data to json formatted data
