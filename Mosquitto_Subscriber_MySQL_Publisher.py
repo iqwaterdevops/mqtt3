@@ -116,12 +116,13 @@ client.username_pw_set(username=mqttUser, password=mqttPassword)
 
 try:
     client.connect(mqttBroker, mqttBrokerPort)
+    client.loop_forever()
 except:
     sys.exit("Connection to MQTT Broker failed")
 
-
 client.on_connect = on_connect
 client.on_message = on_message
+
 
 
 # Publishing the configuration messasge
@@ -129,16 +130,17 @@ client1 = mqtt.Client()
 
 client1.username_pw_set(username=mqttUser, password=mqttPassword)
 
+
 try:
     client1.connect(mqttBroker, mqttBrokerPort)
+    client1.loop_forever()
 except:
     sys.exit("Connection to MQTT Broker failed")
 
-ret = client.publish(topic = "configuration", payload = config_cmd)
-client1.on_publish = on_publish
-
-
-
+while True:
+    ret = client.publish(topic = "configuration", payload = config_cmd)
+    client1.on_publish = on_publish
+    
 # Stay connected to the MQTT Broker indefinitely
+
 client.loop_forever()
-client1.loop_forever()
