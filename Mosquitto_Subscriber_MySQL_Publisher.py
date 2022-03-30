@@ -112,22 +112,19 @@ def on_message(client, userdata, msg):
 # Connect the MQTT Client
 client = mqtt.Client()
 client.username_pw_set(username=mqttUser, password=mqttPassword)
+client.on_connect = on_connect
+client.on_message = on_message
 
 try:
     client.connect(mqttBroker, mqttBrokerPort)
 except:
     sys.exit("Connection to MQTT Broker failed")
 
-client.on_connect = on_connect
-client.on_message = on_message
-
-
-
 
 # Publishing the configuration messasge
 client1 = mqtt.Client()
 client1.username_pw_set(username=mqttUser, password=mqttPassword)
-
+client1.on_publish = on_publish
 
 try:
     client1.connect(mqttBroker, mqttBrokerPort)
@@ -136,7 +133,7 @@ except:
 
 while True:
     ret = client.publish(topic = "configuration", payload = config_cmd)
-    client1.on_publish = on_publish
+    
     
 
 # Stay connected to the MQTT Broker indefinitely
