@@ -45,18 +45,34 @@ mysqlHost = "localhost"
 mysqlUser = "python_logger"
 mysqlPassword = "supersecure"
 
+# Configuation command
+config_cmd = "01000BB8"
+
+
 
 # This callback function fires when the MQTT Broker conneciton is established.  At this point a connection to MySQL server will be attempted.
+# It subscribes to the topic te receive the message.
 def on_connect(client, userdata, flags, rc):
 
     print("MQTT Client Connected")
-    client.subscribe("test")
+    client.subscribe("payload")
     try:
         db = pymysql.connect(host=mysqlHost, user=mysqlUser, password=mysqlPassword, db=dbName, charset='utf8mb4', cursorclass=pymysql.cursors.DictCursor)
         db.close()
         print("MySQL Client Connected")
     except:
         sys.exit("Connection to MySQL failed")
+
+
+
+def on_publish(client, config_cmd, result):
+    client.loop_start()
+    try:
+        client.publish("configuration", config_cmd)
+        print("Configuration published \n")
+    except KeyboardInterrupt:
+        client.disconnect()
+        client.loop_stop()
 
 
 # This function converts hex data to json formatted data
@@ -90,7 +106,7 @@ def on_message(client, userdata, msg):
     MQTTpayload = (msg.payload).decode("utf-8")
     payload_json = hex_json(MQTTpayload)
     payload = json.loads(payload_json)
-    db = pymysql.connect(host="localhost", user=mysqlUser, password=mysqlPassword, db=dbName,charset='utf8mb4',cursorclass=pymysql.cursors.DictCursor)
+    db = pymysql.connect(host=mysqlHost, user=mysqlUser, password=mysqlPassword, db=dbName,charset='utf8mb4',cursorclass=pymysql.cursors.DictCursor)
     sensor_update(db,payload)
     #log_telemetry(db,payload)
     print('data logged')
@@ -102,6 +118,7 @@ def on_message(client, userdata, msg):
 client = mqtt.Client()
 client.on_connect = on_connect
 client.on_message = on_message
+client.on_publish = on_publish
 client.username_pw_set(username=mqttUser, password=mqttPassword)
 try:
     client.connect(mqttBroker, mqttBrokerPort, 60)
