@@ -67,7 +67,6 @@ def on_connect(client, userdata, flags, rc):
 
 def on_publish(client, config_cmd, result):
     print("Configuration published \n")
-    ret = client1.publish("configuration", config_cmd)
     pass
 
 # This function converts hex data to json formatted data
@@ -109,23 +108,37 @@ def on_message(client, userdata, msg):
 
 
 
+
 # Connect the MQTT Client
 client = mqtt.Client()
-client.on_connect = on_connect
-client.on_message = on_message
-
-client1 = mqtt.Client("Publisher")
-client1.on_publish = on_publish
 
 client.username_pw_set(username=mqttUser, password=mqttPassword)
-client1.username_pw_set(username=mqttUser, password=mqttPassword)
 
 try:
     client.connect(mqttBroker, mqttBrokerPort)
-    client1.connect(mqttBroker, mqttBrokerPort)
 except:
     sys.exit("Connection to MQTT Broker failed")
 
 
+client.on_connect = on_connect
+client.on_message = on_message
+
+
+# Publishing the configuration messasge
+client1 = mqtt.Client()
+
+client1.username_pw_set(username=mqttUser, password=mqttPassword)
+
+try:
+    client1.connect(mqttBroker, mqttBrokerPort)
+except:
+    sys.exit("Connection to MQTT Broker failed")
+
+ret = client.publish(topic = "configuration", payload = config_cmd)
+client1.on_publish = on_publish
+
+
+
 # Stay connected to the MQTT Broker indefinitely
 client.loop_forever()
+client1.loop_forever()
