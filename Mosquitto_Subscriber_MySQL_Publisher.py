@@ -77,7 +77,7 @@ def hex_json (data) :
 def sensor_update(db, payload):
 
     cursor = db.cursor()
-    insertRequest = "INSERT INTO mosensor(device_id, version, model, battrey, device_signal, moisture_mv, Bodenfeuchtigkeit, last_heard) VALUES('%s',%s,%s,%s,%s,%s,%s,CURRENT_TIMESTAMP)" % (payload['device_id'], payload['version'], payload['model'], payload['battrey'], payload['device_signal'], payload['moisture_mV'], payload['Bodenfeuchtigkeit'])
+    insertRequest = "INSERT INTO mosensor(device_id, version, model, battrey, device_signal, moisture_mv, Bodenfeuchtigkeit, last_heard) VALUES(%s,%s,%s,%s,%s,%s,%s,CURRENT_TIMESTAMP)" % (payload['device_id'], payload['version'], payload['model'], payload['battrey'], payload['device_signal'], payload['moisture_mV'], payload['Bodenfeuchtigkeit'])
     cursor.execute(insertRequest)
     db.commit()
 
