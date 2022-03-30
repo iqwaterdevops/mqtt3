@@ -67,12 +67,10 @@ def on_connect(client, userdata, flags, rc):
 
 def on_publish(client, config_cmd, result):
     client.loop_start()
-    try:
-        client.publish("configuration", config_cmd)
-        print("Configuration published \n")
-    except KeyboardInterrupt:
-        client.disconnect()
-        client.loop_stop()
+    print("Started Publishing")
+    client.publish("configuration", config_cmd)
+    print("Configuration published \n")
+
 
 
 # This function converts hex data to json formatted data
