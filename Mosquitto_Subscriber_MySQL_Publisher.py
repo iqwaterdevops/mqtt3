@@ -66,7 +66,6 @@ def on_connect(client, userdata, flags, rc):
 
 
 def on_publish(client, config_cmd, result):
-    client.loop_start()
     print("Started Publishing")
     client.publish("configuration", config_cmd)
     print("Configuration published \n")
@@ -115,11 +114,18 @@ def on_message(client, userdata, msg):
 # Connect the MQTT Client
 client = mqtt.Client()
 client.on_connect = on_connect
-client.on_message = on_message
-client.on_publish = on_publish
+# client.on_message = on_message
+# client.on_publish = on_publish
 client.username_pw_set(username=mqttUser, password=mqttPassword)
 try:
-    client.connect(mqttBroker, mqttBrokerPort, 60)
+    client.connect(mqttBroker, mqttBrokerPort)
+    client.on_message = on_message
+except:
+    sys.exit("Connection to MQTT Broker failed")
+
+try:
+    client.connect(mqttBroker, mqttBrokerPort)
+    client.on_publish = on_publish
 except:
     sys.exit("Connection to MQTT Broker failed")
 
