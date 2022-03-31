@@ -45,10 +45,6 @@ mysqlHost = "localhost"
 mysqlUser = "python_logger"
 mysqlPassword = "supersecure"
 
-# Configuation command
-config_cmd = "01000BB8"
-
-
 
 # This callback function fires when the MQTT Broker conneciton is established.  At this point a connection to MySQL server will be attempted.
 # It subscribes to the topic te receive the message.
@@ -63,11 +59,6 @@ def on_connect(client, userdata, flags, rc):
     except:
         sys.exit("Connection to MySQL failed")
 
-
-
-def on_publish(client, config_cmd, result):
-    print("Configuration published \n")
-    pass
 
 # This function converts hex data to json formatted data
 def hex_json (data) :
@@ -107,13 +98,11 @@ def on_message(client, userdata, msg):
     db.close()
 
 
-
-
 # Connect the MQTT Client
 client = mqtt.Client()
-client.username_pw_set(username=mqttUser, password=mqttPassword)
 client.on_connect = on_connect
 client.on_message = on_message
+client.username_pw_set(username=mqttUser, password=mqttPassword)
 
 try:
     client.connect(mqttBroker, mqttBrokerPort)
@@ -121,21 +110,6 @@ except:
     sys.exit("Connection to MQTT Broker failed")
 
 
-# Publishing the configuration messasge
-client1 = mqtt.Client()
-client1.username_pw_set(username=mqttUser, password=mqttPassword)
-client1.on_publish = on_publish
-
-try:
-    client1.connect(mqttBroker, mqttBrokerPort)
-except:
-    sys.exit("Connection to MQTT Broker failed")
-
-while True:
-    ret = client.publish(topic = "configuration", payload = config_cmd)
-    
-    
 
 # Stay connected to the MQTT Broker indefinitely
 client.loop_forever()
-client1.loop_forever()
