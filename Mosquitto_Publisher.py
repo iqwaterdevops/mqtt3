@@ -15,6 +15,8 @@ config_cmd = "01000BB8"
 
 def on_connect(client, userdata, flags, rc):
     print("Publisher MQTT Client Connected")
+    pass
+
 
 def on_publish(client, config_cmd, result):
     print("Configuration published \n")
@@ -27,8 +29,9 @@ client1.on_connect = on_connect
 client1.on_publish = on_publish
 
 try:
-    client1.connect(mqttBroker, mqttBrokerPort)
+    client1.connect(mqttBroker, mqttBrokerPort, keepalive=10)
     ret = client1.publish(topic = "configuration", payload = config_cmd)
+
 except:
     sys.exit("Connection to MQTT Broker failed")
 

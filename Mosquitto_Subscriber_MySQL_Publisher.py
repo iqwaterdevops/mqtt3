@@ -2,7 +2,8 @@ import paho.mqtt.client as mqtt
 import pymysql.cursors
 import sys
 import json
-
+import subprocess
+import time
 
 #User variable for database name
 dbName = "weatherstation"
@@ -93,23 +94,31 @@ def on_message(client, userdata, msg):
     payload = json.loads(payload_json)
     db = pymysql.connect(host=mysqlHost, user=mysqlUser, password=mysqlPassword, db=dbName,charset='utf8mb4',cursorclass=pymysql.cursors.DictCursor)
     sensor_update(db,payload)
-    #log_telemetry(db,payload)
     print('data logged')
     db.close()
+    return 'subscribing completed'
 
 
 # Connect the MQTT Client
-client = mqtt.Client()
-client.on_connect = on_connect
-client.on_message = on_message
-client.username_pw_set(username=mqttUser, password=mqttPassword)
+def execute():
+    client = mqtt.Client()
+    client.on_connect = on_connect
+    client.on_message = on_message
+    client.username_pw_set(username=mqttUser, password=mqttPassword)
 
-try:
-    client.connect(mqttBroker, mqttBrokerPort)
-except:
-    sys.exit("Connection to MQTT Broker failed")
+    try:
+        client.connect(mqttBroker, mqttBrokerPort)
+    except:
+        sys.exit("Connection to MQTT Broker failed")
+
+    if on_message == 'subscribing completed':
+        time.sleep(2)
+        subprocess.call("Mosquitto_Publisher.py", shell=True)
 
 
+    # Stay connected to the MQTT Broker indefinitely
+    client.loop_forever()
 
-# Stay connected to the MQTT Broker indefinitely
-client.loop_forever()
+if  __name__ == '__main__':
+    execute()
+
