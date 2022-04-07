@@ -14,16 +14,17 @@ create table mosensor(
     device_id VARCHAR(150) NOT NULL, 
     version VARCHAR(150) NOT NULL, 
     model VARCHAR(150) NOT NULL, 
-    battrey VARCHAR(150) NOT NULL, 
+    battery VARCHAR(150) NOT NULL, 
     device_signal VARCHAR(150) NOT NULL, 
     moisture_mv VARCHAR(150) NOT NULL, 
+    Bodenfeuchtigkeit VARCHAR(150) NOT NULL,
     last_heard TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
     );
 
     ASCII messasge string = 72403155615900780c541901000000004200fc023260da7c4e
     device_id = int(data[:12], 16)
     version = int(data[12:16], 16)
-    battrey_mV = int(data[16:20], 16)
+    battery_mV = int(data[16:20], 16)
     device_signal = int(data[20:22], 16)
     model = int(data[22:24], 16)
     temperature = int(data[24:28], 16)
@@ -66,7 +67,7 @@ def hex_json (data) :
 
     # dictionary for the payload message
     payload_dict = {"device_id": int(data[:12], 16), "version": int(data[12:16], 16), "model": int(data[22:24], 16), 
-    "battrey": int(data[16:20], 16), "device_signal": int(data[20:22], 16), "moisture_mV": int(data[30:34], 16), "Bodenfeuchtigkeit": (int(data[30:34], 16) / int(data[16:20], 16) * 100) }
+    "battery": int(data[16:20], 16), "device_signal": int(data[20:22], 16), "moisture_mV": int(data[30:34], 16), "Bodenfeuchtigkeit": (int(data[30:34], 16) / int(data[16:20], 16) * 100) }
 
     # convert to payload message to json
 
@@ -79,7 +80,7 @@ def hex_json (data) :
 def sensor_update(db, payload):
 
     cursor = db.cursor()
-    insertRequest = "INSERT INTO mosensor(device_id, version, model, battrey, device_signal, moisture_mv, Bodenfeuchtigkeit, last_heard) VALUES(%s,%s,%s,%s,%s,%s,%s,CURRENT_TIMESTAMP)" % (payload['device_id'], payload['version'], payload['model'], payload['battrey'], payload['device_signal'], payload['moisture_mV'], payload['Bodenfeuchtigkeit'])
+    insertRequest = "INSERT INTO mosensor(device_id, version, model, battery, device_signal, moisture_mv, Bodenfeuchtigkeit, last_heard) VALUES(%s,%s,%s,%s,%s,%s,%s,CURRENT_TIMESTAMP)" % (payload['device_id'], payload['version'], payload['model'], payload['battery'], payload['device_signal'], payload['moisture_mV'], payload['Bodenfeuchtigkeit'])
     cursor.execute(insertRequest)
     db.commit()
 
