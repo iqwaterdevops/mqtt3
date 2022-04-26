@@ -2,7 +2,8 @@ import paho.mqtt.client as mqtt
 import pymysql.cursors
 import sys
 import json
-
+import subprocess
+import time
 
 #User variable for database name
 dbName = "weatherstation"
@@ -13,16 +14,17 @@ create table mosensor(
     device_id VARCHAR(150) NOT NULL, 
     version VARCHAR(150) NOT NULL, 
     model VARCHAR(150) NOT NULL, 
-    battrey VARCHAR(150) NOT NULL, 
+    battery VARCHAR(150) NOT NULL, 
     device_signal VARCHAR(150) NOT NULL, 
     moisture_mv VARCHAR(150) NOT NULL, 
+    Bodenfeuchtigkeit VARCHAR(150) NOT NULL,
     last_heard TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
     );
 
     ASCII messasge string = 72403155615900780c541901000000004200fc023260da7c4e
     device_id = int(data[:12], 16)
     version = int(data[12:16], 16)
-    battrey_mV = int(data[16:20], 16)
+    battery_mV = int(data[16:20], 16)
     device_signal = int(data[20:22], 16)
     model = int(data[22:24], 16)
     temperature = int(data[24:28], 16)
@@ -45,10 +47,6 @@ mysqlHost = "localhost"
 mysqlUser = "python_logger"
 mysqlPassword = "supersecure"
 
-# Configuation command
-config_cmd = "01000BB8"
-
-
 
 # This callback function fires when the MQTT Broker conneciton is established.  At this point a connection to MySQL server will be attempted.
 # It subscribes to the topic te receive the message.
@@ -64,17 +62,12 @@ def on_connect(client, userdata, flags, rc):
         sys.exit("Connection to MySQL failed")
 
 
-
-def on_publish(client, config_cmd, result):
-    print("Configuration published \n")
-    pass
-
 # This function converts hex data to json formatted data
 def hex_json (data) :
 
     # dictionary for the payload message
     payload_dict = {"device_id": int(data[:12], 16), "version": int(data[12:16], 16), "model": int(data[22:24], 16), 
-    "battrey": int(data[16:20], 16), "device_signal": int(data[20:22], 16), "moisture_mV": int(data[30:34], 16), "Bodenfeuchtigkeit": (int(data[30:34], 16) / int(data[16:20], 16) * 100) }
+    "battery": int(data[16:20], 16), "device_signal": int(data[20:22], 16), "moisture_mV": int(data[30:34], 16), "Bodenfeuchtigkeit": (int(data[30:34], 16) / int(data[16:20], 16) * 100) }
 
     # convert to payload message to json
 
@@ -87,7 +80,7 @@ def hex_json (data) :
 def sensor_update(db, payload):
 
     cursor = db.cursor()
-    insertRequest = "INSERT INTO mosensor(device_id, version, model, battrey, device_signal, moisture_mv, Bodenfeuchtigkeit, last_heard) VALUES(%s,%s,%s,%s,%s,%s,%s,CURRENT_TIMESTAMP)" % (payload['device_id'], payload['version'], payload['model'], payload['battrey'], payload['device_signal'], payload['moisture_mV'], payload['Bodenfeuchtigkeit'])
+    insertRequest = "INSERT INTO mosensor(device_id, version, model, battery, device_signal, moisture_mv, Bodenfeuchtigkeit, last_heard) VALUES(%s,%s,%s,%s,%s,%s,%s,CURRENT_TIMESTAMP)" % (payload['device_id'], payload['version'], payload['model'], payload['battery'], payload['device_signal'], payload['moisture_mV'], payload['Bodenfeuchtigkeit'])
     cursor.execute(insertRequest)
     db.commit()
 
@@ -102,43 +95,31 @@ def on_message(client, userdata, msg):
     payload = json.loads(payload_json)
     db = pymysql.connect(host=mysqlHost, user=mysqlUser, password=mysqlPassword, db=dbName,charset='utf8mb4',cursorclass=pymysql.cursors.DictCursor)
     sensor_update(db,payload)
-    #log_telemetry(db,payload)
     print('data logged')
     db.close()
-
-
+    return 'subscribing completed'
 
 
 # Connect the MQTT Client
-client = mqtt.Client()
-client.username_pw_set(username=mqttUser, password=mqttPassword)
+def execute():
+    client = mqtt.Client()
+    client.on_connect = on_connect
+    client.on_message = on_message
+    client.username_pw_set(username=mqttUser, password=mqttPassword)
 
-try:
-    client.connect(mqttBroker, mqttBrokerPort)
-except:
-    sys.exit("Connection to MQTT Broker failed")
+    try:
+        client.connect(mqttBroker, mqttBrokerPort)
+    except:
+        sys.exit("Connection to MQTT Broker failed")
 
-client.on_connect = on_connect
-client.on_message = on_message
-
-
-
-
-# Publishing the configuration messasge
-client1 = mqtt.Client()
-client1.username_pw_set(username=mqttUser, password=mqttPassword)
+    if on_message == 'subscribing completed':
+        time.sleep(2)
+        subprocess.call("Mosquitto_Publisher.py", shell=True)
 
 
-try:
-    client1.connect(mqttBroker, mqttBrokerPort)
-except:
-    sys.exit("Connection to MQTT Broker failed")
+    # Stay connected to the MQTT Broker indefinitely
+    client.loop_forever()
 
-while True:
-    ret = client.publish(topic = "configuration", payload = config_cmd)
-    client1.on_publish = on_publish
-    
+if  __name__ == '__main__':
+    execute()
 
-# Stay connected to the MQTT Broker indefinitely
-client.loop_forever()
-client1.loop_forever()
