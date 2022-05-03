@@ -27,7 +27,7 @@ create table mosensorNSE01(
     moisture = int(data[22:26], 16)
     temperatureSH = int(data[26:30], 16)
     conductivityEC = int(data[30:34], 16)
-    
+
 '''
 
 # User variables for MQTT Broker connection
@@ -62,7 +62,7 @@ def hex_json (data) :
 
     # dictionary for the payload message
     payload_dict = {"device_id": int(data[:12], 16), "version": int(data[12:16], 16), 
-    "battery": int(data[16:20], 16), "device_signal": int(data[20:22], 16), "Bodenfeuchtigkeit": int(data[22:26], 16) }
+    "battery": int(data[16:20], 16), "device_signal": int(data[20:22], 16), "Bodenfeuchtigkeit": (int(data[22:26], 16))/100 }
 
     # convert to payload message to json
 
