@@ -107,7 +107,7 @@ def on_message(client, userdata, msg):
     MQTTpayload = (msg.payload).decode("utf-8")
 
     # messsage length for the NBSN95A is 25 bytes = 50 characters in the message string
-    if (len(msg) == 50):
+    if (len(MQTTpayload) == 50):
         # MQTTpayload = (msg.payload).decode("utf-8")
         payload_json = hex_json_NBSN95A(MQTTpayload)
         payload = json.loads(payload_json)
@@ -117,7 +117,7 @@ def on_message(client, userdata, msg):
         db.close()
 
     # messsage length for the NSE01 is 18 bytes = 36 characters in the message string
-    elif(len(msg) == 36):
+    elif(len(MQTTpayload) == 36):
         # MQTTpayload = (msg.payload).decode("utf-8")
         payload_json = hex_json_NSE01(MQTTpayload)
         payload = json.loads(payload_json)
