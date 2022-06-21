@@ -10,17 +10,18 @@ dbName = "weatherstation"
 
 # it is expected that this Database will already contain one table called mosensor.  Create that table inside the Database with this command:
 '''
-create table mosensor(
+
+    create table mosensor(
     device_id VARCHAR(150) NOT NULL, 
-    version VARCHAR(150) NOT NULL, 
-    model VARCHAR(150) NOT NULL, 
+    version VARCHAR(150) NOT NULL,  
     battery VARCHAR(150) NOT NULL, 
     device_signal VARCHAR(150) NOT NULL, 
-    moisture_mv VARCHAR(150) NOT NULL, 
     Bodenfeuchtigkeit VARCHAR(150) NOT NULL,
     last_heard TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
     );
 
+
+NBSN95 : CFGMOD = 1  : 25 bytes 
     ASCII messasge string = 72403155615900780c541901000000004200fc023260da7c4e
     device_id = int(data[:12], 16)
     version = int(data[12:16], 16)
@@ -33,6 +34,17 @@ create table mosensor(
     temperatureSH = int(data[34:38], 16)
     humiditySH = int(data[38:42], 16)
     timestamp = int(data[42:50], 16)
+
+NSE01 : 18 bytes
+    ASCII messasge string = 41105675049000640d080e026f091e000700
+    device_id = int(data[:12], 16)
+    version = int(data[12:16], 16)
+    battery_mV = int(data[16:20], 16)
+    device_signal = int(data[20:22], 16)
+    moisture = int(data[22:26], 16)
+    temperatureSH = int(data[26:30], 16)
+    conductivityEC = int(data[30:34], 16)
+
 '''
 
 # User variables for MQTT Broker connection
