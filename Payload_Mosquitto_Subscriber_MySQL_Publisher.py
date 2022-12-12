@@ -21,7 +21,7 @@ dbName = "weatherstation"
     );
 
 
-NBSN95 : CFGMOD = 1  : 25 bytes 
+NBSN95A : CFGMOD = 1  : 25 bytes 
     ASCII messasge string = 72403155615900780c541901000000004200fc023260da7c4e
     device_id = int(data[:12], 16)
     version = int(data[12:16], 16)
