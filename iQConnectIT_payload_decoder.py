@@ -48,7 +48,7 @@ def hex_json_NSE01 (data) :
     # dictionary for the payload message
     payload_dict_NSE01 = {"device_id": int(data[:12], 16), "version": int(data[12:16], 16), 
     "battery_V": (int(data[16:20], 16))/int(1000), "device_signal": int(data[20:22], 16), "mod":int(data[22:24]),"temperature" :(int(data[28:32], 16))/100,\
-    "Bodenfeuchtigkeit": (int(data[24:28], 16))/100,"conductivityEC":int(data[32:36], 16),"timestamp":int(data[38:46],16)  }
+    "Bodenfeuchtigkeit": (int(data[24:28], 16))/100,"conductivityEC":int(data[32:36], 16),"timestamp":int(data[38:46],16)}
 
     # convert to payload message to json
     payload_json = json.dumps(payload_dict_NSE01)
