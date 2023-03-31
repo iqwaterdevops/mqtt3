@@ -67,5 +67,5 @@ def hex_json_NSE01 (data) :
 
 
 print("===============================================================")
-print(hex_json_NBSN95A('411056759210007d0c8b0d01Ffff00028d0000000063bbf420'))
-print(hex_json_NSE01("41105675509300820cdc0d0104ef038500120063b27ebe"))
+print(hex_json_NBSN95A('411056759210007d0ca00e01Ffff0002800000000063ecbca4'))
+# print(hex_json_NSE01("41105675938400820cbd0f01089b0168003a0063ecc381"))

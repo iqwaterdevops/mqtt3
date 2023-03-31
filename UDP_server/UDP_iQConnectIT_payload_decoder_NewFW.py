@@ -2,8 +2,8 @@
 import binascii
 import json
 
-udp_data = b'\xf8gxpP@2\x15\x00~\x0e\x19\x11\x01\xff\xff\x00\x00\x03\x00\x00\x00\x00\x00\x00\x00\x00' #  NBSN959A
-#udp_data = b'A\x10Vu\x04\x90\x00\x82\r5\x12\x01\x00\x00\x08>\x00\x00\x00c\xbc\x1aC' # NSE01
+#udp_data = b'\xf8gxpP@2\x15\x00~\x0e\x19\x11\x01\xff\xff\x00\x00\x03\x00\x00\x00\x00\x00\x00\x00\x00' #  NBSN959A
+udp_data = b'A\x10Vu\x04\x90\x00\x82\r;\x11\x01\x00\x00\x08\xfd\x00\x00\x00d\x11\xa22' # NSE01
 udp_data = binascii.hexlify(udp_data).decode('ascii')
 
 
@@ -55,10 +55,8 @@ def hex_json_NSE01 (data) :
     ns01_timestamp = udp_data[46:54]
 
     # dictionary for the payload message
-    payload_dict_NSE01 = {"device_id": int(ns01_device_id, 16), "version": int(ns01_version, 16), 
-    "battery_V": (int(ns01_battery, 16))/int(1000), "device_signal": int(ns01_signal_strength, 16), "mod":int(data[22:24]),"temperature" :(int(ns01_soilTemperature, 16))/100,\
-    "Bodenfeuchtigkeit": (int(ns01_soilMoisture, 16))/100,"conductivityEC":int(ns01_soilConductivity, 16),"timestamp":int(ns01_timestamp,16)}
-
+    payload_dict_NSE01 = {"device_id": ns01_device_id, "version": int(ns01_version, 16),"battery_V": (int(ns01_battery, 16))/int(1000), "device_signal": int(ns01_signal_strength, 16),"mod":int(data[22:24]),"temperature" :(int(ns01_soilTemperature, 16))/100,"Bodenfeuchtigkeit": (int(ns01_soilMoisture, 16))/100,"conductivityEC":int(ns01_soilConductivity, 16)}
+    #,"timestamp":int(ns01_timestamp,16)
     # convert to payload message to json
     payload_json = json.dumps(payload_dict_NSE01)
     return payload_json
@@ -66,4 +64,6 @@ def hex_json_NSE01 (data) :
 
 print("===============================================================")
 print('udp_data_hexstring : {udp_data}')
-print(hex_json_NBSN95A(udp_data))
+print(udp_data)
+#print(hex_json_NBSN95A(udp_data))
+print(hex_json_NSE01(udp_data))

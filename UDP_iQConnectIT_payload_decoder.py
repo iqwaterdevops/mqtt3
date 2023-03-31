@@ -65,11 +65,13 @@ def hex_json_NSE01 (data) :
 
 
 
-udp_data = b'A\x10Vu\x04\x90\x00\x82\r5\x12\x01\x00\x00\x08>\x00\x00\x00c\xbc\x1aC' # NSE01 udp_data
-# udp_data = b'\xf8gxpP@2\x15\x00~\x0e\x19\x11\x01\xff\xff\x00\x00\x03\x00\x00\x00\x00\x00\x00\x00\x00' # NBSN95A udp_data
+udp_data = b'A\x10Vu\x15H\x00\x82\r\x1d\x10\x01\x00\x00\x08\xdb\x00\x00\x00\x00\x00\x00\x00' # NSE01 udp_data
+#udp_data = b'\xf8gxpP@2\x15\x00~\x0e\x19\x11\x01\xff\xff\x00\x00\x03\x00\x00\x00\x00\x00\x00\x00\x00' # NBSN95A udp_data
 
 
 udp_data = binascii.hexlify(udp_data).decode('ascii')
+
+print(udp_data)
 print("===============================================================")
 # print(hex_json_NBSN95A('411056759210007d0c8b0d01Ffff00028d0000000063bbf420'))
 print(hex_json_NSE01(udp_data))
