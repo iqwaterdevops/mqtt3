@@ -73,6 +73,6 @@ udp_data = binascii.hexlify(udp_data).decode('ascii')
 
 print(udp_data)
 print("===============================================================")
-# print(hex_json_NBSN95A('411056759210007d0c8b0d01Ffff00028d0000000063bbf420'))
-print(hex_json_NSE01(udp_data))
+print(hex_json_NBSN95A('411056759210007d0c7d0f01ffff0000020000000064266049'))
+#print(hex_json_NSE01(udp_data))
 # print(hex_json_NSE01("41105675509300820cdc0d0104ef038500120063b27ebe"))

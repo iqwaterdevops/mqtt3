@@ -7,7 +7,6 @@ import time
 
 #User variable for database name
 dbName = "weatherstation"
-
 # it is expected that this Database will already contain one table called mosensor.  Create that table inside the Database with this command:
 '''
 
